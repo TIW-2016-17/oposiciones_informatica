@@ -100,9 +100,11 @@ public class LoginServlet extends HttpServlet {
 				out.println("<span class=\"error\">  La contraseña no puede estar vacia</span>");
 			out.println("</br>");
 
-			if (!nombre.equals("") && !password.equals("") && !usuarios.contains(nombre))
-				out.println("<p class=\"error\">Usuario o nombre incorrecto</p>");
+			if (!nombre.equals("") && !password.equals("") && !usuarios.contains(nombre)){
+				RequestDispatcher reqDis = context.getRequestDispatcher("/errorUsuario");
+				reqDis.forward(request, response);
 
+			}
 			out.println("<input type='submit' value='Send'>");
 			out.println("</fieldset>");
 			out.println("</form>");
