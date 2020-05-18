@@ -7,17 +7,29 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/MyServlet")
+@WebServlet(name = "MyServlet", urlPatterns = { "/MyServlet" }, initParams = {
+		@WebInitParam(name = "author", value = "Carlos Tessier") })
+
 public class MyServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private ServletContext context;
+	private String authorName; 
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		this.context = config.getServletContext();// ServletCon-text
+		authorName = config.getInitParameter("author"); 
+
+	}
+
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -30,6 +42,8 @@ public class MyServlet extends HttpServlet {
 		
 		response.setContentType("text/html;charset=UTF-8"); // Obtenemos el writer PrintWriter
 		out = response.getWriter();
+		
+		
 
 		// contador global
 		Object objectCounter = context.getAttribute("contador");
@@ -45,11 +59,11 @@ public class MyServlet extends HttpServlet {
 		contadorCliente = (Integer)mySession.getAttribute("contadorCliente");
         if( contadorCliente == null || contadorCliente == 0 ) {
            /* Primera visita */
-           out.println("¡Bienvenido al sitio web!");
+           out.println("¡Bienvenido al sitio web de "+authorName+"!");
            contadorCliente = 1;
         } else {
            /* visita de nuevo */
-           out.println("¡Bienvenido de vuelta a mi sitio web!");
+           out.println("¡Bienvenido de vuelta al sitio web de "+authorName+"!");
            contadorCliente += 1;
         }
         mySession.setAttribute("contadorCliente", contadorCliente);
@@ -63,13 +77,7 @@ public class MyServlet extends HttpServlet {
 
 	}
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		this.context = config.getServletContext();// ServletCon-text
-
-	}
-
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
