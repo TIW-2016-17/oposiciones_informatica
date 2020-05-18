@@ -11,32 +11,56 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/MyServlet")
 public class MyServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private ServletContext context
-	;
+	private ServletContext context;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		PrintWriter out = response.getWriter();
+		HttpSession mySession = request.getSession(true);
+
 		int contador = 1;
+		Integer contadorCliente = 0;
 		
+		response.setContentType("text/html;charset=UTF-8"); // Obtenemos el writer PrintWriter
+		out = response.getWriter();
+
+		// contador global
 		Object objectCounter = context.getAttribute("contador");
-		
+
 		if (objectCounter != null) {
 			contador = Integer.parseInt((String) objectCounter);
 			contador++;
 		}
 		context.setAttribute("contador", String.valueOf(contador));
 
-		response.setContentType("text/html"); // Obtenemos el writer PrintWriter
-		out = response.getWriter();
-		out.println("Número de veces que ha sido llamado el método get: " + contador);
+		// contador cliente		
+		
+		contadorCliente = (Integer)mySession.getAttribute("contadorCliente");
+        if( contadorCliente == null || contadorCliente == 0 ) {
+           /* Primera visita */
+           out.println("¡Bienvenido al sitio web!");
+           contadorCliente = 1;
+        } else {
+           /* visita de nuevo */
+           out.println("¡Bienvenido de vuelta a mi sitio web!");
+           contadorCliente += 1;
+        }
+        mySession.setAttribute("contadorCliente", contadorCliente);
+
+		out.println("<p>Número de veces que has visitado la página: " + contadorCliente + "</p>");
+
+		out.println("<p>Vistas de la página: " + contador + "</p>");
+
 		out.flush();
 		out.close();
+
 	}
 
 	@Override
