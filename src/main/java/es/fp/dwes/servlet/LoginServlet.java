@@ -1,12 +1,11 @@
 package es.fp.dwes.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.servlet.RequestDispatcher;
+import java.util.Map;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,116 +13,89 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/loginServlet")
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private ServletContext context;
-
+	private static final String LOGIN_JSP = "/login.jsp";
+	private static final String ERROR_JSP = "/error.jsp";
+	private static final String LISTADO_JSP = "/listado.jsp";
+	private ServletConfig config;
 	private List<String> usuarios;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		this.context = config.getServletContext();// ServletContext
+
 		usuarios = new ArrayList<String>();
 		usuarios.add("bob");
 		usuarios.add("alice");
 		usuarios.add("charlie");
+
+		super.init(config);
+		this.config = config;
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {				
-		
-		HttpSession sesion = request.getSession();		
-		boolean autenticado;
-		
-		autenticado = (sesion != null && sesion.getAttribute("autenticado") != null
-				&& (Boolean) sesion.getAttribute("autenticado"));
-		
+			throws ServletException, IOException {
+
+		HttpSession sesion = request.getSession();
+		String pagina = "";
+
 		if (request.getParameter("cerrarsesion") != null) {
 			sesion.invalidate();
-			autenticado = false;
+			pagina = LOGIN_JSP;
+
+		} else if (sesion.getAttribute("user") != null) {
+			pagina = LISTADO_JSP;
+		} else {
+			pagina = LOGIN_JSP;
+
 		}
 
-		if (autenticado) {			
-			RequestDispatcher reqDis = context.getRequestDispatcher("/listServlet");
-			reqDis.include(request, response);
-		}
-		
-		else {
-            response.sendRedirect("login.html");
-
-		}		
-
-		
+		config.getServletContext().getRequestDispatcher(pagina).forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		
 		HttpSession sesion = request.getSession();
-		
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/html;charset=UTF-8");
-		
 		String nombre = request.getParameter("name");
-		String password = request.getParameter("key");			
-					
-		
-			
-		if ( nombre.equals("") || password.equals("") || !usuarios.contains(nombre)) {
-	
-			
-			out.println("<!DOCTYPE html>");
-			out.println("<html>");
-			out.println("<head>");
-			out.println("<meta http-equiv=\"Content-Type \" content= \"text/html; charset=UTF-8\">");
-			out.println("<title>login servlet</title>");
-			out.println("<style>");
-			out.println("	.error { color:red;}");
-			out.println("</style>");
-			out.println("</head>");
-			out.println("<body>");
-			out.println("<h1>Ejercicio 6 LoginServlet</h1>");
-			out.println("<fieldset>");
-			out.println(" <legend>Registro cliente</legend>");
-			out.println("<form action='loginServlet' method='POST'>");
-			out.println("<input type='text' name='name' value='" + nombre + "' placeholder='user'>  ");
-			if (nombre.equals(""))
-				out.println("<span class=\"error\"> El nombre no puede estar vacio</span>");
-			out.println("</br>");
+		String password = request.getParameter("key");
+		String pagina = LOGIN_JSP;
 
-			out.println("<input type='password' name='key' value='" + password + "' placeholder='password'> ");
-			if (password.equals(""))
-				out.println("<span class=\"error\">  La contraseña no puede estar vacia</span>");
-			out.println("</br>");
+		Map<String, String> errores = new HashMap<String, String>();
 
-			if (!nombre.equals("") && !password.equals("") && !usuarios.contains(nombre)){
-				RequestDispatcher reqDis = context.getRequestDispatcher("/errorUsuario");
-				reqDis.forward(request, response);
+		if (nombre.equals("") || password.equals("")) {
+
+			if (nombre.equals("")) {
+				errores.put("nombre", "El nombre no puede quedar en blanco");
+			}
+			if (password.equals("")) {
+				errores.put("clave", "El campo password no puede estar vacío");
 
 			}
-			out.println("<input type='submit' value='Send'>");
-			out.println("</fieldset>");
-			out.println("</form>");
-			
-			out.println("</body>");
-			out.println("</html>");
-			
-		} else {
-			sesion.setAttribute("autenticado", true);
+
+			request.setAttribute("errores", errores);
+			pagina = LOGIN_JSP;
+		}
+
+		else if (usuarios.contains(nombre)) {
 			sesion.setAttribute("name", nombre);
-			sesion.setAttribute("key", password);
-			sesion.setAttribute("users", usuarios);			
-		
-            RequestDispatcher reqDis = context.getRequestDispatcher("/listServlet");
-			reqDis.forward(request, response);
+			request.setAttribute("name", nombre);
+			request.setAttribute("key", password);
+			request.setAttribute("users", usuarios);
+			pagina = LISTADO_JSP;
+
+		} else {
+			// errores.put("usuario", "El usuario o la contraseña es
+			// incorrecto");
+			request.setAttribute("errores", errores);
+			pagina = ERROR_JSP;
 
 		}
 
-		
+		this.getServletContext().getRequestDispatcher(pagina).forward(request, response);
 	}
 
 }
