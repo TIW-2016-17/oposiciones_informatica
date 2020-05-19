@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,13 +10,20 @@
 <body>
  	<jsp:useBean id="beanUsuario" class="es.fp.dwes.domains.User"/>
  	<jsp:setProperty name="beanUsuario" property="*" />
-	<p>Acabas de registrar al siguiente usuario</p>
-	<ul>
-	<li>Nombre: <jsp:getProperty property="name" name="beanUsuario"/></li>
-	<li>Apellido: <jsp:getProperty property="lastName" name="beanUsuario"/></li>
-	<li>Usuario<jsp:getProperty property="user" name="beanUsuario" /></li>
- 	<li>Contraseña<jsp:getProperty property="password" name="beanUsuario" /></li> 	
- 	</ul>
+ 	
+	<c:if test="${empty param.name }">
+		<p>Ningún usuario registrado</p>
+	</c:if>
+	<c:if test="${!empty param.name }">	
+		<p>Acabas de registrar al siguiente usuario</p>
+		
+		<ul>
+		<li>Nombre: ${beanUsuario.name} </li>
+		<li>Apellido: ${beanUsuario.lastName}</li>
+		<li>Usuario  ${beanUsuario.name}</li>
+	 	<li>Contraseña ${beanUsuario.name}</li> 	
+	 	</ul>
+ 	</c:if>
 </body>
 </html>
 

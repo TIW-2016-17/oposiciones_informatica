@@ -2,6 +2,7 @@
 <%@page import="java.util.Map"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html">
 <html>
 <head>
@@ -15,15 +16,11 @@
 </head>
 <body>
 	<h1>Formulario</h1>
-	<%
-		Map<?, ?> errores = (HashMap<?, ?>) request.getAttribute("errores");
-		if (errores != null && !errores.isEmpty()) {
-			for (Map.Entry<?, ?> error : errores.entrySet()) {
-				out.println("<p style=\"color:red\">" + error.getValue() + "</p>");
-			}
-
-		}
-	%>
+	<c:if test="${!empty errores }">
+		<c:forEach items="${errores }" var="error">			
+				<p class="error">${error.value}</p>	
+		</c:forEach>
+	</c:if>
 
 	<form action="login" method="post">
 		<fieldset>

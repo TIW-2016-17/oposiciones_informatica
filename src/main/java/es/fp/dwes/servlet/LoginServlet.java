@@ -89,8 +89,7 @@ public class LoginServlet extends HttpServlet {
 			pagina = LISTADO_JSP;
 
 		} else {
-			// errores.put("usuario", "El usuario o la contraseña es
-			// incorrecto");
+			errores.put("usuario", "El usuario o la contraseña es incorrecto");
 			request.setAttribute("errores", errores);
 			pagina = ERROR_JSP;
 
