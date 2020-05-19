@@ -29,8 +29,8 @@
 		<fieldset>
 			<legend>Registro cliente</legend>
 			<p>
-				<label for="nombre">Nombre</label> <input type="text" name="name"
-					id="name" required>
+				<label for="user">Usuario</label> <input type="text" name="user"
+					id="user" required>
 			</p>
 			<p>
 				<label for="password">Contraseña</label> <input type="password"

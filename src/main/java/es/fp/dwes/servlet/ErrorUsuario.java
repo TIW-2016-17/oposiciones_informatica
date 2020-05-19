@@ -24,7 +24,7 @@ public class ErrorUsuario extends HttpServlet {
 		out.println("<title>Insert title here</title>");
 		out.println("</head>");
 		out.println("<body style=\"text-align:center;\">");
-		out.println("<p>Usuario incorrecto</p>");
+		out.println("<p>Usuario y/o contraseña incorrecta</p>");
 		out.println("<p><a href='loginServlet'>Volver</a></p>");
 		out.println("</body>");
 		out.println("</html>");

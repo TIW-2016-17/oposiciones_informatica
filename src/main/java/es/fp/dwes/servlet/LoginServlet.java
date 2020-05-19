@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import es.fp.dwes.domains.User;
+
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
@@ -22,15 +24,15 @@ public class LoginServlet extends HttpServlet {
 	private static final String ERROR_JSP = "/error.jsp";
 	private static final String LISTADO_JSP = "/listado.jsp";
 	private ServletConfig config;
-	private List<String> usuarios;
+	private List<User> usuarios;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 
-		usuarios = new ArrayList<String>();
-		usuarios.add("bob");
-		usuarios.add("alice");
-		usuarios.add("charlie");
+		usuarios = new ArrayList<User>();
+		usuarios.add(new User("Bob","Smith","bob","1234"));
+		usuarios.add(new User("Alice","Cooper","alice","1234"));
+		usuarios.add(new User("Charlie","O'Donell","charlie","1234"));
 
 		super.init(config);
 		this.config = config;
@@ -46,8 +48,7 @@ public class LoginServlet extends HttpServlet {
 			sesion.invalidate();
 			pagina = LOGIN_JSP;
 
-		} else if (sesion.getAttribute("user") != null) {
-			pagina = LISTADO_JSP;
+		
 		} else {
 			pagina = LOGIN_JSP;
 
@@ -60,16 +61,16 @@ public class LoginServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession sesion = request.getSession();
-		String nombre = request.getParameter("name");
+		String user = request.getParameter("user");
 		String password = request.getParameter("key");
 		String pagina = LOGIN_JSP;
-
+		User usuario;
 		Map<String, String> errores = new HashMap<String, String>();
 
-		if (nombre.equals("") || password.equals("")) {
+		if (user.equals("") || password.equals("")) {
 
-			if (nombre.equals("")) {
-				errores.put("nombre", "El nombre no puede quedar en blanco");
+			if (user.equals("")) {
+				errores.put("user", "El usuario no puede quedar en blanco");
 			}
 			if (password.equals("")) {
 				errores.put("clave", "El campo password no puede estar vacío");
@@ -80,9 +81,9 @@ public class LoginServlet extends HttpServlet {
 			pagina = LOGIN_JSP;
 		}
 
-		else if (usuarios.contains(nombre)) {
-			sesion.setAttribute("name", nombre);
-			request.setAttribute("name", nombre);
+		else if ( (usuario = comprobarUsuario(user,password))!= null) {
+			sesion.setAttribute("beanSesionUsuario", usuario);
+			request.setAttribute("user", user);
 			request.setAttribute("key", password);
 			request.setAttribute("users", usuarios);
 			pagina = LISTADO_JSP;
@@ -97,5 +98,17 @@ public class LoginServlet extends HttpServlet {
 
 		this.getServletContext().getRequestDispatcher(pagina).forward(request, response);
 	}
+	
+	private User comprobarUsuario(String user, String password) {
+		User usuarioValidado = null;
+		for (User usuario : usuarios) {
+			if (user.equals(usuario.getUser()) && password.equals(usuario.getPassword())) {
+				usuarioValidado = usuario;
+				break;
+			}
+		}
+		return usuarioValidado;
+	}
+
 
 }
