@@ -1,7 +1,7 @@
 package es.fp.dwes.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,37 +10,42 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/loginPost")
 public class Ejercicio4Servlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		// Lee los parametrod de la petición (request)
-		String nombre = (String) req.getParameter("name");
-		String password = (String) req.getParameter("key");
-		res.setContentType("text/html"); // tipo de conntenido
-		PrintWriter out = res.getWriter(); // obtener el writer
-		// escribiendo en la salida
-		out.println("<!DOCTYPE html>");
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<title>Registro</title>");
-		out.println("</head>");
-		out.println("<body>");
-		if (nombre.equals("bob") && password.equals("1234")) {
-			out.println("<p>Información del cliente</p> ");
-			out.println("<p><strong>Nombre: " + nombre + "</strong></p>");
-			out.println("<p><strong>Email: " + password + "</strong></p>");
-		}
-		else {
-			out.println("<p style=\"color:red\"> Usuario incorrecto</p>");
-			out.println("<p> <a href='registroServlet.html'>Volver</a></p>");
-		}
-		out.println("</body>");
-		out.println("</html>");
-		out.flush();
-		out.close(); // Informa al servidor que ha terminado
-		// enviando información
+	private static final String LOGIN_JSP = "/login.jsp";
+	private static final String LISTADO_JSP = "/listado.jsp";
+	private static final String ERROR_JSP = "/error.jsp";
+	private ServletConfig config;
 
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		this.config = config;
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		config.getServletContext().getRequestDispatcher(LOGIN_JSP).forward(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		String nombre = request.getParameter("name");
+		String password = request.getParameter("key");
+
+		String pagina = "";
+
+		if (nombre.equals("bob") || password.equals("1234")) {
+
+			pagina = LISTADO_JSP;
+
+		} else {
+			pagina = ERROR_JSP;
+
+		}
+		config.getServletContext().getRequestDispatcher(pagina).forward(request, response);
 	}
 
 }
