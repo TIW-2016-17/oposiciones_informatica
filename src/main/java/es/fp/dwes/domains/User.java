@@ -5,22 +5,29 @@ public class User {
 	private String lastName;
 	private String user;
 	private String password;
+	private int id;
 	
 	public User() {
 		
 	}
 	
-	public User(String name, String lastName, String user,
+	public User(int id,String name, String lastName, String user,
 			String password) {
+		this.id = id;
 		this.name = name;
 		this.lastName = lastName;
 		this.user = user;
 		this.password = password;
 	}
 	
-	public User(String name, String password) {
-		this(name,"",name,password);
+	public User(String name, String lastName, String user, String password) {
+		this(0,name,"",name,password);
 	}
+	
+	public User(String name, String password) {
+		this(0,name,"",name,password);
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -47,12 +54,21 @@ public class User {
 		this.password = password;
 	}
 
-	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
-		return "User [ name=" + name + ", lastName=" + lastName + ", user=" + user + ", password="
-				+ password + "]";
+		return "User [name=" + name + ", lastName=" + lastName + ", user=" + user + ", password=" + password + ", id="
+				+ id + "]";
 	}
+
+	
 	
 	
 }
