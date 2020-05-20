@@ -21,7 +21,7 @@ public class User {
 	}
 	
 	public User(String name, String lastName, String user, String password) {
-		this(0,name,"",name,password);
+		this(0,name,lastName,user,password);
 	}
 	
 	public User(String name, String password) {

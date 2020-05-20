@@ -26,6 +26,13 @@ import es.fp.dwes.jdbc.daos.UserDAOImpl;
 		@WebInitParam(name = "configuracion", value = "es.fp.dwes.jdbc.persistencia") })
 public class LoginServlet extends HttpServlet {
 
+	private static final String ATRIBUTO_BEAN_SESION_USUARIO = "beanSesionUsuario";
+	private static final String PARAMETRO_KEY = "key";
+	private static final String PARAMETRO_USER = "user";
+	private static final String PARAMETRO_CERRARSESION = "cerrarsesion";
+	private static final String ATRIBUTO_ERRORES = "errores";
+	private static final String ATRIBUTO_USERS = "users";	
+
 	private static final long serialVersionUID = 1L;
 
 	private static final String LOGIN_JSP = "/login.jsp";
@@ -73,7 +80,7 @@ public class LoginServlet extends HttpServlet {
 		HttpSession sesion = request.getSession();
 		String pagina = "";
 
-		if (request.getParameter("cerrarsesion") != null) {
+		if (request.getParameter(PARAMETRO_CERRARSESION) != null) {
 			sesion.invalidate();
 			pagina = LOGIN_JSP;
 
@@ -89,8 +96,8 @@ public class LoginServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		HttpSession sesion = request.getSession();
-		String user = request.getParameter("user");
-		String password = request.getParameter("key");
+		String user = request.getParameter(PARAMETRO_USER);
+		String password = request.getParameter(PARAMETRO_KEY);
 		String pagina = LOGIN_JSP;
 		User usuario;
 		Map<String, String> errores = new HashMap<String, String>();
@@ -98,27 +105,27 @@ public class LoginServlet extends HttpServlet {
 		if (user.equals("") || password.equals("")) {
 
 			if (user.equals("")) {
-				errores.put("user", "El usuario no puede quedar en blanco");
+				errores.put(PARAMETRO_USER, "El usuario no puede quedar en blanco");
 			}
 			if (password.equals("")) {
 				errores.put("clave", "El campo password no puede estar vacío");
 
 			}
 
-			request.setAttribute("errores", errores);
+			request.setAttribute(ATRIBUTO_ERRORES, errores);
 			pagina = LOGIN_JSP;
 		}
 
 		else if ((usuario = comprobarUsuario(user, password)) != null) {
-			sesion.setAttribute("beanSesionUsuario", usuario);
-			request.setAttribute("user", user);
-			request.setAttribute("key", password);
-			request.setAttribute("users", usuarios);
+			sesion.setAttribute(ATRIBUTO_BEAN_SESION_USUARIO, usuario);
+			request.setAttribute(PARAMETRO_USER, user);
+			request.setAttribute(PARAMETRO_KEY, password);
+			request.setAttribute(ATRIBUTO_USERS, usuarios);
 			pagina = LISTADO_JSP;
 
 		} else {
 			errores.put("usuario", "El usuario o la contraseña es incorrecto");
-			request.setAttribute("errores", errores);
+			request.setAttribute(ATRIBUTO_ERRORES, errores);
 			pagina = ERROR_JSP;
 
 		}

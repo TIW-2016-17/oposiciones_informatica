@@ -41,7 +41,7 @@ public class UserDAOImpl implements UserDAO {
 	public User getUserByKey(int pk) throws SQLException{
 		PreparedStatement ps = con.prepareStatement(rb.getString("selectUserPK"));
 		ps.setInt(1, pk);
-		User user = null;
+		User user = new User();
 		ResultSet resultados = ps.executeQuery();
 		while (resultados.next()) {
 			user = new User(resultados.getInt("id"),
@@ -60,7 +60,7 @@ public class UserDAOImpl implements UserDAO {
 	public User getUserByName(String name) throws SQLException{
 		PreparedStatement ps = con.prepareStatement(rb.getString("selectUserName"));
 		ps.setString(1, name);
-		User user = null;
+		User user = new User();
 		ResultSet resultados = ps.executeQuery();
 		while (resultados.next()) {
 			user = new User(resultados.getInt("id"),

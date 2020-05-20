@@ -33,6 +33,7 @@
 				<label for="password">Contraseña</label> <input type="password"
 					name="key" id="key" required>
 			</p>
+			
 		</fieldset>
 		<input type=Submit value="Enviar">
 	</form>
